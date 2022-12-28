@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from streamlit_extras.chart_container import chart_container
+import io
+
+buffer = io.BytesIO()
 
 st.set_page_config(
     page_title="Faixa de Posicionamento",
@@ -73,7 +75,38 @@ with c1:
             )
 
         with c2:
-            with chart_container(df):
-                st.plotly_chart(fig, use_container_width=True, height=800)
+            tab1, tab2, tab3 = st.tabs(["Gráfico 📈", "Tabela 💾", "Buscas por Categoria 📊"])
+            with tab1:
+                st.plotly_chart(fig, theme="streamlit", use_container_width=True, height=800)
+
+            with tab2:
+                st.markdown("## Tabela de Palavras-Chave")
+                df = df.sort_values(by='Volume Buscas', ascending=False)
+                st.dataframe(df, use_container_width=True)
+
+                with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+                    # Write each dataframe to a different worksheet.
+                    df.to_excel(writer, sheet_name='faixa-posicionamento')
+                    # Close the Pandas Excel writer and output the Excel file to the buffer
+                    writer.save()
+
+                    st.download_button(
+                        label="Download da tabela em Excel 💾",
+                        data=buffer,
+                        file_name="faixa-de-posicionamento.xlsx",
+                        mime="application/vnd.ms-excel"
+                    )
+
+            with tab3:
+                df2 = df.groupby(['Categoria'], as_index=False).sum()
+                df2 = df2.sort_values(by='Volume Buscas', ascending=False)
+
+                fig2 = px.bar(df2,
+                              x='Volume Buscas',
+                              y='Categoria',
+                              title="Volume de Buscas por Categoria",
+                              color='Categoria')
+
+                st.plotly_chart(fig2, theme="streamlit", use_container_width=True, height=800)
 
 st.markdown("----")
