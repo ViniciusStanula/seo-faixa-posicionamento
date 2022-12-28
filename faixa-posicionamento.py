@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from streamlit_extras.chart_container import chart_container
 
 st.set_page_config(
     page_title="Faixa de Posicionamento",
