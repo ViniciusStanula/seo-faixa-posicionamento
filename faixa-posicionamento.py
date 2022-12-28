@@ -72,6 +72,7 @@ with c1:
             )
 
         with c2:
-            st.plotly_chart(fig, theme="streamlit", use_container_width=True, height=800)
+            with chart_container(df):
+                st.plotly_chart(fig, use_container_width=True, height=800)
 
 st.markdown("----")
