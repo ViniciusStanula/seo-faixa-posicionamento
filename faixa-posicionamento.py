@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import io
-
-buffer = io.BytesIO()
+from io import BytesIO
 
 st.set_page_config(
     page_title="Faixa de Posicionamento",
@@ -84,19 +82,21 @@ with c1:
                 df = df.sort_values(by='Volume Buscas', ascending=False)
                 st.dataframe(df, use_container_width=True)
 
-                with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-                    # Write each dataframe to a different worksheet.
-                    df.to_excel(writer, sheet_name='faixa-posicionamento')
-                    # Close the Pandas Excel writer and output the Excel file to the buffer
+                def to_excel(df):
+                    output = BytesIO()
+                    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+                    df.to_excel(writer, index=False, sheet_name='faixa-posicionamento')
+                    workbook = writer.book
+                    worksheet = writer.sheets['faixa-posicionamento']
+                    format1 = workbook.add_format({'num_format': '0.00'})
+                    worksheet.set_column('A:A', None, format1)
                     writer.save()
-
-                    st.download_button(
-                        label="Download da tabela em Excel 💾",
-                        data=buffer,
-                        file_name="faixa-de-posicionamento.xlsx",
-                        mime="application/vnd.ms-excel"
-                    )
-
+                    processed_data = output.getvalue()
+                    return processed_data
+                df_xlsx = to_excel(df)
+                st.download_button(label='📥 Download do Excel',
+                                   data=df_xlsx,
+                                   file_name='faixa-de-posicionamento.xlsx')
             with tab3:
                 df2 = df.groupby(['Categoria'], as_index=False).sum()
                 df2 = df2.sort_values(by='Volume Buscas', ascending=False)
