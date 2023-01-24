@@ -3,4 +3,3 @@ pandas
 plotly.express
 openpyxl
 xlsxwriter
-streamlit_extras
