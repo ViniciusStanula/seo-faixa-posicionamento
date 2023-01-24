@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from io import BytesIO
+from streamlit_extras.buy_me_a_coffee import button
 
 st.set_page_config(
     page_title="Faixa de Posicionamento",
@@ -108,5 +109,7 @@ with c1:
                               color='Categoria')
 
                 st.plotly_chart(fig2, theme="streamlit", use_container_width=True, height=800)
+		
+button(username="fake-username", floating=False, width=221)
 
 st.markdown("----")
