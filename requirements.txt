@@ -3,4 +3,4 @@ pandas
 plotly.express
 openpyxl
 xlsxwriter
-streamlit_extras.buy_me_a_coffee
+streamlit_extras
